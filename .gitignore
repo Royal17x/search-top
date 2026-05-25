@@ -1,0 +1,12 @@
+# bin
+search-top
+*.exe
+
+# env
+.env
+.env.local
+
+# ide
+.idea/
+.vscode/
+*.swp
