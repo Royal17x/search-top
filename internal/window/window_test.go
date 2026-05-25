@@ -33,6 +33,9 @@ func TestAggregate_stopList(t *testing.T) {
 	if _, ok := totals["стоп-слово"]; ok {
 		t.Fatal("stopList word not found in aggregation")
 	}
+	if totals["кроссовки"] != 1 {
+		t.Errorf("want: 1, got: %d", totals["кроссовки"])
+	}
 }
 
 func TestRotation_clears_old_data(t *testing.T) {

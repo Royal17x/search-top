@@ -16,7 +16,7 @@ import (
 const maxEventAge = 5 * time.Minute
 
 type AnomalyDetector interface {
-	isSus(userID, query string) bool
+	IsSus(userID, query string) bool
 }
 
 type Consumer struct {
@@ -73,7 +73,7 @@ func (c *Consumer) handle(data []byte) {
 		return
 	}
 
-	if c.detector.isSus(ev.UserID, query) {
+	if c.detector.IsSus(ev.UserID, query) {
 		metrics.EventsDropped.WithLabelValues("anomaly").Inc()
 		return
 	}

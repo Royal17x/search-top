@@ -4,6 +4,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/Royal17x/search-top/internal/metrics"
 )
 
 const (
@@ -79,6 +81,11 @@ func (w *TrendingWindow) tick() {
 }
 
 func (w *TrendingWindow) Aggregate(blocked map[string]struct{}) map[string]int32 {
+	start := time.Now()
+	defer func() {
+		metrics.AggregationDuration.Observe(time.Since(start).Seconds())
+	}()
+
 	totals := make(map[string]int32)
 	for _, b := range w.buckets {
 		for q, c := range b.snapshot() {

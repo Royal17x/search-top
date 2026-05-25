@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/Royal17x/search-top/internal/anomaly"
 	"github.com/Royal17x/search-top/internal/api"
 	"github.com/Royal17x/search-top/internal/config"
@@ -19,6 +21,7 @@ import (
 )
 
 func main() {
+	_ = godotenv.Load()
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	cfg := config.Load()
 

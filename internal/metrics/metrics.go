@@ -1,7 +1,9 @@
 package metrics
 
-import "github.com/prometheus/client_golang/prometheus/promauto"
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+)
 
 var (
 	EventsConsumed = promauto.NewCounter(prometheus.CounterOpts{
@@ -16,12 +18,12 @@ var (
 
 	TopRequests = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "search_top_requests_total",
-		Help: "Total calls to the top-N",
+		Help: "Total HTTP calls to GET /api/v1/top",
 	})
 
 	AggregationDuration = promauto.NewHistogram(prometheus.HistogramOpts{
 		Name:    "search_aggregate_duration_seconds",
-		Help:    "Time spent aggregating bucket window into totals map",
+		Help:    "Time spent aggregate all 30 buckets into totals map",
 		Buckets: prometheus.ExponentialBuckets(0.0001, 2, 10),
 	})
 
