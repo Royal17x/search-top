@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Royal17x/search-top/internal/tracing"
 	"github.com/joho/godotenv"
 
 	"github.com/Royal17x/search-top/internal/anomaly"
@@ -24,6 +25,16 @@ func main() {
 	_ = godotenv.Load()
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	cfg := config.Load()
+
+	if endpoint := os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"); endpoint != "" {
+		shutdown, err := tracing.Init(context.Background(), endpoint)
+		if err != nil {
+			log.Warn("tracing init failed, continuing without tracing", "err", err)
+		} else {
+			defer shutdown(context.Background())
+			log.Info("tracing enabled", "endpoint", endpoint)
+		}
+	}
 
 	win := window.NewTrendingWindow()
 	defer win.Close()
