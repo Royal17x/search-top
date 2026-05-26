@@ -5,10 +5,10 @@ import (
 
 	"log/slog"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/Royal17x/search-top/internal/stoplist"
 	"github.com/Royal17x/search-top/internal/window"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 type Server struct {
@@ -24,6 +24,12 @@ func NewServer(cache *window.TrendingCache, sl *stoplist.StopList, log *slog.Log
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /", s.handleIndex)
+	mux.HandleFunc("GET /partial/top", s.handlePartialTop)
+	mux.HandleFunc("GET /partial/stoplist", s.handlePartialStoplist)
+	mux.HandleFunc("POST /partial/stoplist", s.handlePartialStoplistAdd)
+	mux.HandleFunc("DELETE /partial/stoplist/{word}", s.handlePartialStoplistRemove)
+
 	mux.HandleFunc("GET /api/v1/top", s.handleTop)
 	mux.HandleFunc("GET /api/v1/stoplist", s.handleStoplistList)
 	mux.HandleFunc("POST /api/v1/stoplist", s.handleStoplistAdd)
@@ -32,6 +38,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /metrics", promhttp.Handler())
 
 	var h http.Handler = mux
+	h = otelhttp.NewHandler(h, "search-top")
 	h = recovery(h)
 	h = logging(s.log)(h)
 	return h
